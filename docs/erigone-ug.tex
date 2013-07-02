@@ -1,0 +1,875 @@
+\documentclass[11pt]{article}
+\usepackage{mathpazo}
+\usepackage{url}
+\usepackage{verbatim}
+
+\newcommand*{\prg}{\textsc{Erigone}}
+\newcommand*{\trc}{\textsc{Trace}}
+\newcommand*{\lst}{\textsc{List}}
+\newcommand*{\vmc}{\textsc{VMC}}
+\newcommand*{\cmp}{\textsc{Compiler}}
+\newcommand*{\spn}{\textsc{Spin}}
+\newcommand*{\prm}{\textsc{Promela}}
+\newcommand*{\ada}{\textsc{Ada 2005}}
+\newcommand*{\gnat}{\textsc{gnat}}
+\newcommand*{\dt}{\textsc{dot}}
+\newcommand*{\smc}{\textit{SMC}}
+\newcommand*{\p}[1]{\texttt{#1}}
+
+\textwidth=15cm
+\textheight=22.5cm
+\topmargin=0pt
+\headheight=0pt
+\oddsidemargin=1cm
+\headsep=0pt
+\renewcommand{\baselinestretch}{1.1}
+\setlength{\parskip}{0.20\baselineskip plus 1pt minus 1pt}
+\parindent=0pt
+
+\title{The \prg{} Model Checker\\\bigskip%
+User's Guide\\\bigskip%
+\large Version 3.2.5\\\bigskip}     %%%%% Change the version number!!!
+\author{Mordechai (Moti) Ben-Ari\\
+Department of Science Teaching\\
+Weizmann Institute of Science\\
+Rehovot 76100 Israel\\
+\textsf{http://stwww.weizmann.ac.il/g-cs/benari/}}
+%\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\vfill
+
+\begin{center}
+Copyright \copyright{} 2007-12 by Mordechai (Moti) Ben-Ari.
+\end{center}
+This work is licensed under the Creative Commons Attribution-ShareAlike 3.0
+License. To view a copy of this license, visit
+\url{http://creativecommons.org/licenses/by-sa/3.0/}; or, (b) send a letter
+to Creative Commons, 543 Howard Street, 5th Floor, San Francisco,
+California, 94105, USA.
+
+
+\newpage
+
+\section{Introduction}
+
+\prg{} is a partial reimplementation of the \spn{} Model Checker. The goal
+is to facilitate learning concurrency and model checking.
+\begin{itemize}
+\item \prg{} is single, self-contained, executable file so that
+installation and use are trivial.
+\item \prg{} produces a detailed trace of the model checking
+algorithms. The contents of the trace are customizable and a uniform
+keyword-based format is used that can be directly read or used by other
+tools.
+\item Extensive modularization is used in the design of the \prg{}
+program to facilitate understanding the source code. This will also
+enable researchers to easily modify and extend the program.
+\end{itemize}
+\prg{} implements a large subset of \prm{} that is sufficient for
+demonstrating the basic concepts of model checking for the verification
+of concurrent programs. No language constructs are added so that
+programs for \prg{} can be used with \spn{} when more expressiveness and
+better performance are desired.
+
+\prg{} is written in \ada{} for reliability, maintainability and
+portability. No non-standard constructs are used.
+
+The \prg{} software is copyrighted under the \textsc{GNU} General Public
+License. The copyright statement and the text of the license are
+included in the distribution archive.
+
+\subsection*{Acknowledgements}
+I would like to thank Gerard J. Holzmann for his generous assistance
+throughout the development of this project. The original compiler was
+developed by Trishank Karthik Kuppusamy under the supervision of Edmond
+Schonberg.
+
+\section{References}
+\begin{itemize}
+\item Christel Baier and Joost-Pieter Katoen.
+\textit{Principles of Model Checking}. MIT Press, 2008.
+\item M. Ben-Ari. \textit{Ada for Software Engineers
+(Second Edition with Ada 2005)}. Springer, 2009.
+\item M. Ben-Ari. \textit{Principles of the Spin Model Checker}.
+Springer, 2008.\\
+The sample programs from the book have been adapted for \prg{}
+and can downloaded as \p{psmc-erigone.zip}.
+\item M. Ben-Ari. \textit{Principles of Concurrent and Distributed Programming (Second
+Edition)}. Addison-Wesley, 2006.
+\item Gerard J. Holzmann. \textit{The Spin Model Checker: Primer
+and Reference Manual}.\\Addison-Wesley, 2004. The abbreviation
+\smc{} is used to refer to this book.
+\item Fred Kr\"{o}ger and Stephan Merz.
+\textit{Temporal Logic and State Systems}. Springer, 2008.
+\end{itemize}
+
+\smallskip
+
+\begin{center}
+\begin{tabular}{l@{\hspace{3em}}l}
+\hline
+\prg{} & \url{http://stwww.weizmann.ac.il/g-cs/benari/erigone/}\\
+& \url{http://code.google.com/p/erigone/}\\
+\gnat{} & \url{https://libre.adacore.com/}\\
+\spn{} & \url{http://spinroot.com/}\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Installation, building and execution}
+\begin{itemize}
+
+\item \textbf{Installation}\\Download the archive \p{erigone-N.zip} from
+Google Code. Open the archive to a clean directory. If you wish to
+examine or modify the source code, download the the archive
+\p{erigone-source-N.zip} and open it to the same directory. The
+following subdirectories are created:
+
+\begin{itemize}
+\item \p{docs}: documentation;
+\item \p{examples}: \prm{} source code of example programs;
+\item \p{src}: the source code of \prg{};
+\item \p{trace}: the source code of the \trc{} program;
+\item \p{list}: the source code of the \lst{} program;
+\item \p{vmc}: the source code of the \vmc{} program;
+\item \p{vmc-examples}: examples for the \vmc{} program.
+\end{itemize}
+
+The file \p{readme.txt} in \p{examples} describes the commands and
+expected output for simulating and verifying the \prm{} programs in the
+directory.
+
+\item \textbf{Execution}
+\begin{verbatim}
+erigone [arguments] filename
+\end{verbatim}
+
+In addition to the \prg{} model checker, the archive contains additional
+programs described in separate sections:
+
+\begin{itemize}
+\item \cmp{}: Run the compiler by itself (Section~\ref{s.compile});
+\item \lst{}: Format the output of the compiler (Section~\ref{s.lst});
+\item \trc{}: Format the output of the model checker (Section~\ref{s.trace});
+\item \vmc{}: Generate graphs of the model checking algorithm
+  (Section~\ref{s.vmc}).
+\end{itemize}
+
+\item \textbf{File names}\\
+If an extension is not given in \p{filename}, the default \prm{} source
+file extension is \p{pml}. Other file names are obtained by using the
+file root and predefined extensions. The output of a compilation is the
+\emph{automata file} with extension \p{aut} (AUTomata) that contains the
+symbols and transitions resulting from the compilation. The extension of
+the trail file that contains a counterexample for an unsuccessful
+verification is \p{trl} (TRaiL). If the LTL correctness property
+\p{filename} is not given, the default is the root with extension
+\p{prp} (correctness PRoPerty).
+
+\item \textbf{Building}\\
+\prg{} was built with the \gnat{} \ada{} compiler. The source code is
+divided into several subdirectories and the \gnat{} Project Manager is
+used to build the program. The file \p{erigone.gpr} describes the
+project configuration. Object files are placed in a subdirectory of
+\p{src} called \p{obj} that must exist before executing the project
+manager.
+
+To build, execute:
+\begin{verbatim}
+gnatmake -Perigone [-O1] [-gnatn] [-g]
+\end{verbatim}
+
+The \p{-g} argument is necessary if you want to use the \p{gdb}
+debugger. For a production build, optimization level \p{-O1}
+significantly improves the performance, while \p{-gnatn} enables
+inlining of subprograms.
+
+The program \cmp{} is built within the same directory using the project
+configuration file \p{compiler.gpr}. The program \lst{}, \trc{} and
+\vmc{} are built within their own directories using the appropriate
+\p{gpr} files.
+
+\end{itemize}
+
+\section{Command-line arguments}
+
+\textbf{Execution mode}
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{-r} & [R]andom simulation (default)\\\hline
+\p{-i} & [I]nteractive simulation\\\hline
+\p{-g} & [G]uided simulation\\\hline
+\p{-gN} & [G]uided simulation using the N'th trail\\\hline\hline
+\p{-s} & Verification of [s]afety\\\hline
+\p{-a} & Verification of [a]cceptance\\\hline
+\p{-f} & Verification with [f]airness\\\hline\hline
+\p{-c} & [C]ompilation only\\\hline
+\end{tabular}
+\end{center}
+
+\pagebreak[3]
+
+\textbf{Execution limits (with defaults)}
+\begin{center}
+\begin{tabular}{|l|p{.4\textwidth}|r|}
+\hline
+\p{-lhN} & [H]ash slots & 22\\\hline
+\p{-llN} & [L]ocation stack & 3\\\hline
+\p{-lpN} & [P]rogress steps & 1\\\hline
+\p{-lsN} & [S]tate stack & 2\\\hline
+\p{-ltN} & [T]otal steps & 10\\\hline
+\end{tabular}
+\end{center}
+
+\medskip
+
+The parameter \p{N} is in thousands (except for hash slots). For the
+stacks, the value is the number of \textbf{stack frames} and not the
+number of \emph{bytes}. \emph{Total steps} is the number of steps of a
+simulation or verification before the execution is terminated. For a
+verification, a progress report can be printed after every
+\emph{progress steps} have been executed if \p{g} is included in the
+display arguments. The hash table is allocated $2^{N}$ slots, where $16
+\leq N \leq 32$.
+
+\medskip
+
+\textbf{Additional execution arguments}
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{-h} & Display the [h]elp screen\\\hline
+\p{-mN} & Stop after the [m]'th error\\\hline
+\p{-nN} & Ra[n]dom seed\\\hline
+\p{-t[-][f]} & Read L[T]L formula\\\hline
+\end{tabular}
+\end{center}
+
+If \p{-m0} is used, \emph{all} errors are reported and numbered trail
+files are written for each one. Random numbers are used for random
+simulation and for search diversity (Section~\ref{s.search}). The
+default seed for random simulation is obtained from the clock.
+
+The \p{-t} parameter is used to specify that an LTL formula is to be
+used in a verification. The formula may be embedded in the \prm{} source
+code or read from a file:
+\begin{verbatim}
+-t            use "ltl { ... }" if it exists
+-t            otherwise, use default file "filename.prp"
+-t-name       use "ltl name { ... }"
+-tname.prp    use named file "name.prp"
+\end{verbatim}
+
+\medskip
+
+\textbf{Display arguments}
+
+The argument \p{-d} displays all the data. Selective display is possible
+with the argument \p{-dX}, where \p{X} is a string of one or more
+character taken from the following tables.
+
+Compile and runtime messages:
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{g} & Pro[g]ress messages\\\hline
+\p{p} & [P]rogram (transitions and symbols)\\\hline
+\p{r} & [R]un-time statistics\\\hline
+\p{v} & [V]ersion and copyright notice\\\hline
+\end{tabular}
+\end{center}
+
+\pagebreak[3]
+
+Transitions:
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{a} & [A]ll transitions from a state\\\hline
+\p{c} & [C]hosen transition (simulation)\\\hline
+\p{e} & [E]xecutable transitions from a state\\\hline
+\p{l} & [L]ocation stack\\\hline
+\p{t} & [T]rail\\\hline
+\p{y} & B[y]te code\\\hline
+\end{tabular}
+\end{center}
+
+\pagebreak[3]
+
+States:
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{h} & State in the [h]ash table\\\hline
+\p{m} & States in a si[m]ulation\\\hline
+\p{o} & Channel c[o]ntents\\\hline
+\p{s} & [S]tate stack\\\hline
+\end{tabular}
+\end{center}
+
+LTL translation:
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{b} & [B]\"{u}chi automaton\\\hline
+\p{n} & [N]odes in the LTL tableau\\\hline
+\end{tabular}
+\end{center}
+
+\medskip
+
+\textbf{Debug arguments}
+
+The argument \p{-u} displays debugging data that will be of interest
+when modifying the program. Selective display is possible
+with the argument \p{-uX}, where \p{X} is a string of one or more
+character taken from the following tables.
+
+\begin{center}
+\begin{tabular}{|l|p{.45\textwidth}|}
+\hline
+\p{c} & [C]ompiler tokens \\\hline
+\p{i} & [I]nterpreter stack \\\hline
+\p{r} & P[r]reprocessor\\\hline
+\end{tabular}
+\end{center}
+
+
+\section{The subset of \spn{} that is implemented}
+\subsection{\prm{} subset}
+
+All constructs of the \prm{} language are implemented except for:
+\begin{itemize}
+\item \p{unsigned} and \p{typedef}.
+\item Macros except for \p{\#define}.\footnote{One line only; continuation lines are
+not supported.}
+\item Progress labels and never claims except those generated by LTL formulas.
+\item The specifiers \p{hidden}, \p{local}, \p{xr}, \p{xs} are
+ignored but don't cause compilation errors.
+\item \p{priority}, \p{unless}.
+\item C code insertion.
+\end{itemize}
+
+There are limitations on certain other constructs:
+\begin{itemize}
+\item Bitwise and shift operators are supported only for one-byte types. 
+\item \p{d\_step} is implemented like \p{atomic}.
+\item Only the first form of the \p{for} statement (iteration over
+bounds given by expressions) is implemented.
+\item You cannot initialize local variables declared after a
+statement. (This is likely to happen if an \p{inline} declares a
+local variable.)
+\end{itemize}
+
+Limits on the size of the \prm{} models are compiled into \prg{}
+(Appendix~\ref{a.limits}). If you need to verify larger models, you will
+need to rebuild the software.
+
+\subsection{Search diversity}\label{s.search}
+
+By default, the state space of a model is searched in a fixed order.
+\prg{} supports \emph{search diversity} where randomness is introduced
+into the search by specifying a seed \p{-nN} for a
+verification.\footnote{For an introduction to search diversity and an
+explanation of the examples, see: M. Ben-Ari and F. Kaloti-Hallak,
+Demonstrating random and parallel algorithms with Spin, \textit{ACM
+Inroads}, in press.} For example, consider the Tseitin clauses
+associated with the graph $K_{4,4}$ given in the file \p{sat4-unsat} in
+the directory \p{examples}; this set of clauses is unsatisfiable and a
+safety verification will prove this in 1835006 steps. The file
+\p{sat4-sat} contains the same set of clauses with the parity of one
+literal changed so that the set is satisfiable. With the seed \p{-n91},
+the counterexample (satisfying interpretation) is found in 127389 steps,
+while with the seed \p{-n58} only 361 steps are needed.
+
+The Java program \p{GenerateSatERI} can be used to generate Tseitin
+clauses corresponding to $K_{n,n}$ together with random satisfiable
+instances and batch files with random seeds. However, \prg{} is limited
+to sets of clauses for $n\leq 4$.  
+
+\newpage
+
+\section{Display format}
+
+Data is displayed in a uniform format: lines of named associations, each
+of which is terminated with a comma. This format is verbose, but easy to
+read and easy to parse by postprocessors. \footnote{In the following
+description, the display option needed to obtain each item is given in
+parentheses and lines have been elided and reformatted to fit the page.
+Furthermore, the display of later versions might be somewhat different
+from what appears here.}
+
+\subsection{Data structure display}
+
+The display begins with a title line (\p{v}) and a line
+with the parameters of the execution (\p{r}):
+
+\begin{footnotesize}
+\begin{verbatim}
+Erigone v3.1.0, Copyright 2008-11 by Moti Ben-Ari, GNU GPL.
+execution mode=simulation,simulation mode=random,seed=-1,trail number=0,total steps=10,
+\end{verbatim}
+\end{footnotesize}
+
+The symbol table (\p{p}) includes for each variable its type, size,
+length (for arrays), flags (scope is global or local, parameter or not),
+the offset into its frame in the state vector and the byte code (\p{y})
+for initialization:
+
+\begin{footnotesize}
+\begin{verbatim}
+variables=6,
+name=n,type=byte_type,offset=0,length=1,size=1,scope=0,
+  parameter=0,byte code={load_const 0 0,byte_store 0 0,},
+name=finished,type=byte_type,offset=1,length=1,size=1,scope=0,
+  parameter=0,byte code={load_const 0 0,byte_store 1 0,},
+name=P.i,type=byte_type,offset=0,length=1,size=1,scope=1,
+  parameter=0,byte code=,
+name=P.temp,type=byte_type,offset=1,length=1,size=1,scope=1,
+  parameter=0,byte code=,
+name=Q.i,type=byte_type,offset=0,length=1,size=1,scope=1,
+  parameter=0,byte code=,
+name=Q.temp,type=byte_type,offset=1,length=1,size=1,scope=1,
+  parameter=0,byte code=,
+symbol table end=,
+\end{verbatim}
+\end{footnotesize}
+
+Tables of numeric and string constants (if any) are also
+displayed when \p{p} is given.
+
+The frame table gives the offset of the frame for global and local
+variables:
+\begin{footnotesize}
+\begin{verbatim}
+frame table start=,
+global=,offset=0,
+pid=0,offset=2,
+pid=1,offset=4,
+pid=2,offset=6,
+frame table end=,
+\end{verbatim}
+\end{footnotesize}
+
+For each process, a table of its transitions is display containing: the
+source and target state, various flags, the source code and the byte
+code:
+
+\begin{footnotesize}
+\begin{verbatim}
+transitions start=,
+processes=3,
+process=P,initial=1,transitions=7,
+number=0,source=1,target=3,atomic=0,end=0,accept=0,line=7,
+  statement={(i> 10)},byte code={byte_load 2 0,iconst 10 0,icmpgt 0 0,},
+number=1,source=1,target=4,atomic=0,end=0,accept=0,line=8,
+  statement={else},byte code={logic_else 0 0,},
+number=2,source=3,target=9,atomic=0,end=0,accept=0,line=13,
+  statement={finished++},byte code={iinc 1 1,},
+number=3,source=4,target=5,atomic=0,end=0,accept=0,line=9,
+  statement={temp=n},byte code={byte_load 0 0,byte_store 3 0,},
+  ...
+transitions end=,
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{LTL translation display}
+The display of the translation of the LTL formula to a B\"{u}chi
+automaton (BA) appears before that of the transitions of the processes,
+because the transitions of the BA are added to the transition table as a
+never claim. The display starts with the LTL formula together with the
+formula obtained by pushing negation inward (\p{b}). This is followed by
+the nodes of the tableau (\p{n}):
+
+\begin{footnotesize}
+\begin{verbatim}
+ltl formula=![]<>csp,
+push negation=<>[]!csp,
+nodes start=,
+expanding=,node=1,incoming={0,},new={<>[]!csp,},old=,next=,with set=,
+expanding=,node=2,incoming={0,},new={[]!csp,},old={<>[]!csp,},next=,with set=,
+expanding=,node=4,incoming={0,},new={!csp,},old={[]!csp,<>[]!csp,},next={[]!csp,},with set=,
+expanding=,node=4,incoming={0,},new=,old={!csp,[]!csp,<>[]!csp,},next={[]!csp,},with set=,
+expanding=,node=5,incoming={4,},new={[]!csp,},old=,next=,with set={4,},
+expanding=,node=6,incoming={4,},new={!csp,},old={[]!csp,},next={[]!csp,},with set={4,},
+expanding=,node=6,incoming={4,},new=,old={!csp,[]!csp,},next={[]!csp,},with set={4,},
+  ...
+exists=,node=6,new incoming={4,6,},
+  ...
+nodes end=,
+\end{verbatim}
+\end{footnotesize}
+
+A BA is extracted from the tableau (\p{b}) and optimized:
+
+\begin{footnotesize}
+\begin{verbatim}
+optimized buchi automaton start=,
+source=0,target=0,atomic=0,end=0,accept=0,line=0,statement={1},
+  byte code={iconst 1 0,},
+source=0,target=4,atomic=0,end=0,accept=0,line=0,statement={!csp},
+  byte code={bit_load 3 0,logic_not 0 0,},
+source=4,target=4,atomic=0,end=0,accept=1,line=0,statement={!csp},
+  byte code={bit_load 3 0,logic_not 0 0,},
+optimized buchi automaton end=,
+\end{verbatim}
+\end{footnotesize}
+
+The BA is used to create a never claim process in the transition table
+(\p{p}). In addition, the set of accept states is identified to make
+them easier to find.
+
+\subsection{Display of a simulation}
+A simulation begins from an initial state (\p{m}):
+
+\begin{footnotesize}
+\begin{verbatim}
+initial state=,P=1,Q=1,Finish=1,n=0,finished=0,P.i=1,P.temp=0,Q.i=1,Q.temp=0,
+\end{verbatim}
+\end{footnotesize}
+
+For each step of the simulation, the display can contain the set of all
+transitions from the state (\p{a}), the set of executable transitions
+(\p{e}), the chosen transition (\p{c}) and the next state in the
+simulation (\p{m}):
+
+\begin{footnotesize}
+\begin{verbatim}
+all transitions=5,
+process=P,source=1,target=3,atomic=0,end=0,accept=0,line=7,
+  statement={(i> 10)},byte code={byte_load 2 0,iconst 10 0,icmpgt 0 0,},
+process=P,source=1,target=4,atomic=0,end=0,accept=0,line=8,
+  statement={else}, byte code={logic_else 0 0,},
+process=Q,source=1,target=3,atomic=0,end=0,accept=0,line=19,
+  statement={(i> 10)},byte code={byte_load 4 0,iconst 10 0,icmpgt 0 0,},
+process=Q,source=1,target=4,atomic=0,end=0,accept=0,line=20,
+  statement={else},byte code={logic_else 0 0,},
+process=Finish,source=1,target=2,atomic=0,end=0,accept=0,line=29,
+  statement={finished== 2},byte code={byte_load 1 0,iconst 2 0,icmpeq 0 0,},
+
+executable transitions=2,
+process=P,source=1,target=4,atomic=0,end=0,accept=0,line=8,
+  statement={else},byte code={logic_else 0 0,},
+process=Q,source=1,target=4,atomic=0,end=0,accept=0,line=20,
+  statement={else},byte code={logic_else 0 0,},
+
+chosen transition=,
+process=Q,source=1,target=4,atomic=0,end=0,accept=0,line=20,
+  statement={else},byte code={logic_else 0 0,},
+
+next state=,P=1,Q=4,Finish=1,n=0,finished=0,P.i=1,P.temp=0,Q.i=1,Q.temp=0,
+\end{verbatim}
+\end{footnotesize}
+
+To display the data in buffered channels use \p{-u}.
+The first field is the current number of messages in the channel;
+this followed by the messages themselves in brackets:
+
+\begin{footnotesize}
+\begin{verbatim}
+next state=,Pinit=3,ch1=1,a=0,b=0,c=0,channel1={2,[1,2,3,],[4,5,6,],},
+\end{verbatim}
+\end{footnotesize}
+
+The simulation can terminated by an assertion violation, or a valid or
+invalid end state, or by exceeding the total steps allowed:
+
+\begin{footnotesize}
+\begin{verbatim}
+simulation terminated=valid end state,
+\end{verbatim}
+\end{footnotesize}
+
+The runtime statistics are then displayed (\p{r}):
+
+\begin{footnotesize}
+\begin{verbatim}
+steps=87,
+times=,compilation=0.33,simulation=0.18,
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{Display of a verification}
+
+During a verification, the sets of all transitions (\p{a}) and
+executable transitions (\p{e}) can be displayed as for a simulation.
+Operations on the stacks can be displayed, both for the state stack
+(\p{s}):
+
+\begin{footnotesize}
+\begin{verbatim}
+push state=10,p=6,q=6,wantp=1,wantq=1,critical=0,
+  ...
+top state=10,p=6,q=6,wantp=1,wantq=1,critical=0,
+  ...
+pop state=10,reason=no_more_transitions,
+\end{verbatim}
+\end{footnotesize}
+
+and for the location stack (\p{l}):
+
+\begin{footnotesize}
+\begin{verbatim}
+push transition=16,process=0,transition=5,never=0,visited=false,last=false,
+  ...
+top transition=16,process=0,transition=5,never=0,visited=true,last=false,
+  ...
+pop transition=16,
+\end{verbatim}
+\end{footnotesize}
+
+An attempt is made to insert each new state into the hash table (\p{h});
+it may succeed or fail:
+
+\begin{footnotesize}
+\begin{verbatim}
+inserted=true,p=5,q=3,wantp=1,wantq=1,critical=1,
+  ...
+inserted=false,p=6,q=3,wantp=1,wantq=1,critical=0,
+\end{verbatim}
+\end{footnotesize}
+
+For verification with acceptance, the ``inner'' flag will be displayed
+indicating if the state is part of the outer or inner search; the
+``seed'' state is also displayed:
+
+\begin{footnotesize}
+\begin{verbatim}
+seed=,p=4,q=13,:never:=4,wantp=1,wantq=1,turn=2,csp=0,inner=1,fair=3,
+  ...
+inserted=true,p=14,q=11,:never:=4,wantp=1,wantq=1,turn=2,csp=1,inner=1,fair=1,
+\end{verbatim}
+\end{footnotesize}
+
+For verification with fairness, the counter of the copies of the states
+is displayed
+
+The outcome and the runtime statistics (\p{r}) are
+displayed at the end of a verification:
+
+\begin{footnotesize}
+\begin{verbatim}
+verification terminated=never claim terminated,
+
+steps=47,
+state stack elements=9,element size=22,memory=198,
+transition stack elements=14,element size=5,memory=70,
+states stored=19,matched=9,total=28,element size=22,memory=418,
+times=,compilation=0.03,verification=0.09,
+\end{verbatim}
+\end{footnotesize}
+
+Progress messages can be displayed during a long verification (\p{g}).
+
+\newpage
+
+\section{The \cmp{} program}\label{s.compile}
+
+\cmp{} is a main program that runs the compiler as a separate program
+producing the automata file:
+\begin{verbatim}
+  compiler promela-filename [automata-filename]
+\end{verbatim}
+
+
+\section{The \lst{} program}\label{s.lst}
+
+The \lst{} program reads the automata file and formats it for display.
+Run it after running the compiler:
+\begin{verbatim}
+compiler filename
+list filename
+\end{verbatim}
+or
+\begin{verbatim}
+erigone -c filename
+list filename
+\end{verbatim}
+
+
+\section{The \trc{} program}\label{s.trace}
+
+The \trc{} program performs string processing on the output data written
+by \prg{}. It prints the output of a simulation in tabular form. First
+execute:
+\begin{verbatim}
+erigone -dcmop filename > filename.trc
+\end{verbatim}
+to write a file with the symbol table, states and transitions
+taken. Then execute:
+\begin{verbatim}
+trace [arguments] filename
+\end{verbatim}
+The arguments are:
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\p{-tn} & Number of lines between column [t]itles\\\hline\hline
+\p{-ln} & Column width for [l]ine numbers\\\hline
+\p{-pn} & Column width for [p]rocesses\\\hline
+\p{-sn} & Column width for [s]tatements\\\hline
+\p{-vn} & Column width for [v]ariables\\\hline\hline
+\p{-xs} & E[x]clude variables with \p{s}\\\hline
+\p{-ms} & Exclude state[m]ents with \p{s}\\\hline
+\end{tabular}
+\end{center}
+Here is an example of the output of this program:
+\begin{footnotesize}
+\begin{verbatim}
+Trace v1.00, Copyright 2008-9 by Moti Ben-Ari, GNU GPL.
+Proc Line Statement        wantp  wantq  critic 
+                           0      0      0      
+p    7    {!wantq}         0      0      0      
+q    19   {!wantp}         0      0      0      
+q    20   {wantq=true}     0      1      0      
+p    8    {wantp=true}     1      1      0      
+q    21   {critical++}     1      1      1      
+p    9    {critical++}     1      1      2      
+p    10   {assert(critical 1      1      2      
+simulation terminated=assert statement is false,
+\end{verbatim}
+\end{footnotesize}
+
+The \p{-x} and \p{-m} arguments are used for filtering the output.
+The strings \p{s} are lists of strings terminated by \p{\#}:
+\begin{verbatim}
+-xwant# -massert#!#
+\end{verbatim}
+
+The meaning is that a column for a \emph{variable} (\p{-x}) or a row for
+a \emph{statement} (\p{-m}) will not be printed if one of those strings
+appears within the variable or statement, respectively. With the above
+arguments, the columns for \p{wantp} and \p{wantq} will not be printed,
+nor will the rows with the \p{assert} statements or the negation
+operator.
+
+
+\section{The \vmc{} program}\label{s.vmc}
+
+\vmc{} (\textit{Visualization of Model Checking}) is a postprocessor of
+the trace output of \prg{} that generates a sequence of graphs showing
+the incremental building and traversing of the state space during a
+simulation or verification. First, run \prg{} using
+the display options shown in the examples below and
+redirect the output to a file with extension \p{trc}; for the Third
+Attempt, the commands for a simulation and a safety verification are:
+\begin{verbatim}
+erigone    -dehlmprs third > third.trc
+erigone -s -dehlmprs third > third.trc
+\end{verbatim}
+Now run \vmc{}:\footnote{\vmc{} knows whether a simulation or
+verification was run from the information in the \p{trc} file.} 
+\begin{verbatim}
+vmc third
+\end{verbatim}
+This will create a sequence of files in the \dt{} format of
+\textsc{GraphViz}. The file names will have a sequence number appended.
+Now, run the \dt{} program on each of these files. For Windows, the
+following batch command will do this for each file, where the file name
+is substituted for the parameter \verb+%1+ and we assume that \dt{} is
+in the path:
+\begin{verbatim}
+for %%F in (%1-*.dot) do dot -Tpng %%F > %%~nF.png
+\end{verbatim}
+You can now display the graphs using software such as \p{IrfanView}.
+
+A Windows batch file for the entire procedure is included in the archive.
+
+The ``prologue'' of the \dt{} file (specifying the size of the nodes,
+etc.) can be different for each program and is contained in the file
+\p{filename.prg}. If this file does not exist, it is created with
+default values.
+
+\medskip
+
+\textbf{Reading the graph}
+
+Each node is rectangular and is labeled with:
+\begin{itemize}
+\item For each process, the line number and statement at the
+location counter in this state. For a simulation, transitions that are
+executable are decorated with the at-sign \verb+@+.
+\item For each variable, its value. The order of the variables is the
+same as that in which they are declared. (The order can be checked in
+the \p{aut} file if there is any doubt.)
+\item For a verification, an \emph{end state} is decorated with a sharp
+\verb+#+ and an accept state is decorated with an asterisk \verb+*+.
+\item For a fairness verification, the count of the copy of the state
+is displayed within square brackets.
+\end{itemize}
+
+Visual effects are applied to states as follows:
+\begin{itemize}
+\item The node for the current state has an elliptical border.
+\item A node for a state that is in error is colored red.
+\item For a verification:
+\begin{itemize}
+\item Nodes for states on the stack have a bold border.
+\item Nodes for matched states in the hash table have a double border.
+\item Nodes for states in an inner search are filled in.
+\end{itemize}
+\item For a simulation:
+\begin{itemize}
+\item The number of borders of a node indicates the number of times
+that the node has been visited.
+\end{itemize}
+\end{itemize}
+
+The archive \p{vmc-examples.zip} contains \prm{} for three programs,
+together with the \dt{} and \textsc{png} files that result from running
+\vmc{} and \dt{}. The program \p{second} causes an assert statement to
+evaluate to false, \p{third} has an invalid end state, and \p{fair}
+contains an accept cycle if run with \p{-a} rather than \p{-f}.
+
+\newpage
+
+\appendix
+\section{Size limits}\label{a.limits}
+
+Here is a list of the limits compiled into \prg{} and the package
+specifications where they appear. The declaration of the size of the
+compressed state vector is in a separate package \p{Config\_State} to
+enable a future implementation of per-model verifiers with minimal
+recompilation. To restrict the coupling between the compiler and the
+model checker, the limits marked \p{*} are declared independently in
+\p{Compiler\_Global}.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}\hline
+\multicolumn{3}{|c|}{Declarations in package \p{Global}}\\\hline
+Identifier & Type & Meaning\\\hline\hline
+\p{Byte} & \p{mod 256} & Values and indices\\\hline
+\p{Name*} & \p{String(1..32)} & Identifiers\\\hline
+\p{Line*} & \p{String(1..128)} & Source statements, strings\\\hline
+\multicolumn{3}{c}{}\\\hline
+\multicolumn{3}{|c|}{Declarations in package \p{Config}}\\\hline
+Identifier & Type & Meaning\\\hline\hline
+\p{Process\_Index} & \p{Byte range 0..7} & Processes\\\hline
+\p{Symbol\_Index} & \p{Byte range 0..31} & Symbols\\\hline
+\p{Message\_Index} & \p{Byte range 0..3} & Elements in a channel message\\\hline
+\p{Channel\_Index} & \p{Byte range 1..8} & Channels\\\hline
+\p{Data\_Index} & \p{Byte range 0..63} & Bytes of data in a state\\\hline
+\p{Transition\_Index*} & \p{Byte range 0..254} & Transitions in a process\\\hline
+\p{Location\_Index} & \p{Byte range 0..15} & Transitions from a single state\\\hline
+\p{Byte\_Code\_Index*} & \p{Byte range 0..255} & Byte codes per statement\\\hline
+\p{Interpret\_Index} & \p{Byte range 0..63} & Interpretation stack\\\hline
+\p{Node\_Index} & \p{Integer range 0..511} & Nodes in the state space diagram\\\hline
+\p{Max\_Futures} & \p{constant := 4} & Number of future formulas\\\hline
+\multicolumn{3}{c}{}\\\hline
+\multicolumn{3}{|c|}{Declarations in package \p{Config\_State}}\\\hline
+Identifier & Type & Meaning\\\hline\hline
+\p{Process\_Size\_Index} & \p{Byte range 0..7} & Size of processes in a state vector\\\hline
+\p{Variable\_Size\_Index} & \p{Byte range 0..31} & Size of variables in a state vector\\\hline
+\multicolumn{3}{c}{}\\\hline
+\multicolumn{3}{|c|}{Declarations in package \p{Compiler\_Global}}\\\hline
+Identifier & Type & Meaning\\\hline\hline
+\p{Table\_Index} & \p{Byte range 0..63} & Size of the symbol table\\\hline
+\p{Token\_Index} & \p{Byte range 0..4095} & Number of tokens in the source\\\hline
+\end{tabular}
+\end{center}
+
+\end{document}

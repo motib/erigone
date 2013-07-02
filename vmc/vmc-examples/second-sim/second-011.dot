@@ -1,0 +1,19 @@
+digraph "" {
+  graph [size="16,12",ranksep=.25];               
+  node [shape=box,fontname=Helvetica,fontsize=14];
+  node [width=1.6,height=1.2,fixedsize=true];     
+ 0 [label=" 6. !wantq @\n 17. !wantp @\n 0 0\n"peripheries=3];
+ 1 [label=" 7. wantp = true @\n 17. !wantp @\n 0 0\n"peripheries=2];
+ 2 [label=" 8. assert( @\n 17. !wantp\n 1 0\n"peripheries=2];
+ 3 [label=" 10. wantp = false @\n 17. !wantp\n 1 0\n"peripheries=2];
+ 4 [label=" 6. !wantq @\n 18. wantq = true @\n 0 0\n"peripheries=1];
+ 5 [label=" 7. wantp = true @\n 18. wantq = true @\n 0 0\n"peripheries=1];
+ 6 [label=" 8. assert( @\n 18. wantq = true @\n 1 0\n" shape = ellipse peripheries=1];
+ 0 -> 1;
+ 1 -> 2;
+ 2 -> 3;
+ 3 -> 0;
+ 0 -> 4;
+ 4 -> 5;
+ 5 -> 6;
+}

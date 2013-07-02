@@ -1,0 +1,12 @@
+digraph "" {
+  graph [size="16,12",ranksep=.25];               
+  node [shape=box,fontname=Helvetica,fontsize=12];
+  node [width=1.6,height=1.2,fixedsize=true];     
+ 0 [label=" 7. sem > 0\n 20. sem > 0\n 1 0\n" style = bold ];
+ 1 [label=" 8. sem--\n 20. sem > 0\n 1 0\n" style = bold ];
+ 2 [label=" 10. critical++\n 20. sem > 0\n 0 0\n" style = bold ];
+ 3 [label=" 11. assert(critical == 1)\n 20. sem > 0\n 0 1\n" shape = ellipse  style = bold ];
+ 0 -> 1;
+ 1 -> 2;
+ 2 -> 3;
+}

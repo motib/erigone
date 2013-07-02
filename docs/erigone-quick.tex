@@ -1,0 +1,372 @@
+\documentclass[11pt]{article}
+\usepackage{mathpazo}
+\usepackage{url}
+\usepackage{verbatim}
+
+\newcommand*{\prg}{\textsc{Erigone}}
+\newcommand*{\eui}{\textsc{EUI}}
+\newcommand*{\spn}{\textsc{Spin}}
+\newcommand*{\jsp}{\textsc{jSpin}}
+\newcommand*{\prm}{\textsc{Promela}}
+\newcommand*{\p}[1]{\texttt{#1}}
+\newcommand*{\bu}[1]{\textsf{#1}}
+
+\textwidth=15cm
+\textheight=22.5cm
+\topmargin=0pt
+\headheight=0pt
+\oddsidemargin=1cm
+\headsep=0pt
+\renewcommand{\baselinestretch}{1.1}
+\setlength{\parskip}{0.20\baselineskip plus 1pt minus 1pt}
+\parindent=0pt
+
+\title{The \prg{} Model Checker\\\bigskip%
+Quick Start Guide}
+\author{Mordechai (Moti) Ben-Ari\\
+Department of Science Teaching\\
+Weizmann Institute of Science\\
+Rehovot 76100 Israel\\
+\textsf{http://stwww.weizmann.ac.il/g-cs/benari/}}
+%\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\vfill
+
+\begin{center}
+Copyright \copyright{} 2010-12 by Mordechai (Moti) Ben-Ari.
+\end{center}
+This work is licensed under the Creative Commons Attribution-ShareAlike 3.0
+License. To view a copy of this license, visit
+\url{http://creativecommons.org/licenses/by-sa/3.0/}; or, (b) send a letter
+to Creative Commons, 543 Howard Street, 5th Floor, San Francisco,
+California, 94105, USA.
+
+\newpage
+
+\section{Introduction}
+
+\prg{} is a \emph{model checker} that can simulate and verify concurrent
+and distributed programs. It is a partial reimplementation of the \spn{}
+model checker and supports a large subset of \prm{}, the modeling
+language used by \spn{}. The \prg{} distribution contains a
+comprehensive User's Guide and software documentation; this document is
+intended to be a quick introduction to working with \prg{}.
+
+\prg{} is run from the command line. \eui{} is a development environment
+for \prg{} with a graphical user interface; it can be downloaded from
+the \textsc{jSpin} project in Google Code
+\url{http://code.google.com/p/jspin/}. A separate Quick Start Guide for
+running \prg{} using \eui{} is available at that site.
+
+The \prg{} software is copyrighted under the \textsc{GNU}
+General Public License. The copyright statement and the text of the
+license are included in the distribution.
+
+Introductory textbooks on concurrency and model checking are:
+
+\begin{itemize}
+\item M. Ben-Ari. \textit{Principles of Concurrent and Distributed
+Programming (Second Edition)}. Addison-Wesley, 2006.
+\item M. Ben-Ari. \textit{Principles of the Spin Model Checker}.
+Springer, 2008.
+\end{itemize}
+
+\section{Installation and execution}
+
+This section describes installation and execution of \prg{} under the
+Windows operating system. For other systems, see the User's Guide.
+
+Download the archive \p{erigone-N.zip} (where \p{N} is the latest
+version number) from the \p{Erigone} project at Google Code
+\url{http://code.google.com/p/erigone/} and open the archive to a clean
+directory. The executable file is \p{erigone.exe}, and there are
+subdirectories containing the documentation and example programs. To run
+\prg{}, execute the command:
+
+\begin{verbatim}
+erigone [arguments] filename
+\end{verbatim}
+where \p{filename} is the name of the file containing the \prm{} source
+code; the default extension is \p{pml}. The command-line arguments can
+be displayed by \p{erigone -h}.
+
+\section{Simulating a \prm{} program}
+
+This section show how to simulate two \prm{} programs for the mutual
+exclusion problem; the first has an error that causes mutual exclusion
+to be violated, whereas mutual exclusion always holds in the second
+program.
+
+\subsection*{The ``Second Attempt''}
+
+The first program is the ``Second Attempt'' to solve the mutual
+exclusion problem (Ben-Ari, 2006, Section~3.6) and is contained in
+the file \p{second.pml} in the \p{examples} directory:
+\begin{verbatim}
+bool wantp = false, wantq = false;
+byte critical = 0; 
+
+active proctype p() {
+    do 
+    :: !wantq;
+       wantp = true;
+       critical++;
+       assert (critical == 1);
+       critical--;
+       wantp = false;
+    od
+}
+
+active proctype q() { /* Symmetrical */ }
+\end{verbatim}
+
+Run:
+\begin{verbatim}
+erigone examples\second
+\end{verbatim}
+The output will be similar to:
+\begin{verbatim}
+simulation terminated=assert statement is false,
+  line=22,statement={assert (critical == 1)},
+\end{verbatim}
+because it is highly likely that a run will cause mutual exclusion to
+be violated.
+
+There are a large number of options for tracing the execution of \prg{}.
+For example:
+\begin{verbatim}
+erigone -dm examples\second
+\end{verbatim}
+displays the states of the simulation:
+\begin{verbatim}
+initial state=0,p=1,q=1,wantp=0,wantq=0,critical=0,
+next state=1,p=1,q=2,wantp=0,wantq=0,critical=0,
+  ...
+next state=16,p=3,q=3,wantp=1,wantq=1,critical=0,
+next state=17,p=3,q=4,wantp=1,wantq=1,critical=1,
+next state=18,p=4,q=4,wantp=1,wantq=1,critical=2,
+simulation terminated=assert statement is false,
+  line=22,statement={assert (critical == 1)},
+\end{verbatim}
+
+Since the variable \p{critical} has the value~2 when the assert
+statement in line~22 of the program is evaluated in state~18, an error
+has occurred and the simulation terminates.
+
+All the output of \prg{} is in a uniform format that is easy to read and
+easy to process by other tools. Each line consists of a sequence of
+comma-terminated named associations of the form \p{"name=value,"}.
+
+\subsection*{Mutual exclusion with a semaphore}
+
+The second program uses a semaphore to achieve mutual exclusion
+and is contained in the file \p{sem.pml} in the \p{examples} directory:
+\begin{verbatim}
+byte sem = 1;
+byte critical = 0;
+
+active proctype p() {	
+  do :: 
+    atomic {
+      sem > 0;
+      sem--
+    }
+    critical++;
+    assert(critical == 1);
+    critical--;
+    sem++
+  od
+}
+
+active proctype q() {	/* The same */ }
+
+active proctype r() {	/* The same */ }	
+\end{verbatim}
+
+Run:
+\begin{verbatim}
+erigone examples\sem
+\end{verbatim}
+to simulate the program. The simulation will run until the step limit is
+reached:
+\begin{verbatim}
+simulation terminated=too many steps,
+  line=11,statement={assert(critical == 1)},
+\end{verbatim}
+You can run with the \p{-dm} argument to display the (very large number
+of) states. Enter \bu{ctrl-c} to stop the simulation prematurely.
+
+These simulations were \emph{random simulations}, where the
+(nondeterministic) selection of the next statement to execute is chosen
+randomly. See the User's Guide for information on how to run an
+\emph{interactive simulation} where you control the section of
+statements. \emph{Guided simulation} is explained in the next section.
+
+\section{Verifying a \prm{} program with assert statements}
+
+Let us verify these two programs. Run:
+\begin{verbatim}
+erigone -s examples\second
+\end{verbatim}
+where the argument \p{-s} means to run a verification in \emph{Safety mode}.
+The output will be:
+\begin{verbatim}
+verification terminated=assert statement is false,
+  line=22,statement={assert (critical == 1)},
+\end{verbatim}
+Now run:
+\begin{verbatim}
+erigone -g examples\second
+\end{verbatim}
+to run a \emph{guided simulation} using the trail which describes the
+\emph{counterexample}, the sequence of states found during the
+verification that leads to a violation of mutual exclusion. Add the
+argument \p{-dm} to display the states in the counterexample.
+
+For the semaphore program, running:
+\begin{verbatim}
+erigone -s examples\sem
+\end{verbatim}
+gives:
+\begin{verbatim}
+verification terminated=successfully,
+\end{verbatim}
+
+There are numerous options for tracing the verification; for example,
+the argument \p{-dh} will print out which states were generated during
+the search and stored in the hash table (or not stored because they were
+already there):
+
+\begin{verbatim}
+inserted=true,p=1,q=1,wantp=0,wantq=0,critical=0,
+inserted=true,p=2,q=1,wantp=0,wantq=0,critical=0,
+inserted=true,p=3,q=1,wantp=1,wantq=0,critical=0,
+inserted=true,p=4,q=1,wantp=1,wantq=0,critical=1,
+inserted=true,p=5,q=1,wantp=1,wantq=0,critical=1,
+inserted=true,p=6,q=1,wantp=1,wantq=0,critical=0,
+inserted=false,p=1,q=1,wantp=0,wantq=0,critical=0,
+  ...
+\end{verbatim}
+
+\section{Verifying a safety property using LTL}
+
+\prg{} can verify a correctness property written as a formula in
+\emph{linear temporal logic (LTL)}. There are two methods of specifying
+an LTL property: internally within the program or externally in a
+separate file. It is easier to use the first method; see the User's
+Guide for information on using LTL properties in files.
+
+The program in the file \p{second-ltl.pml} is the same as that in
+\p{second.pml} except that the assert statements have been removed and
+replace by an LTL formula for the correctness property:
+
+\begin{verbatim}
+ltl { [](critical<=1) }
+\end{verbatim}
+Read this as: the value of \p{critical} is \emph{always} (\p{[]}) less
+than or equal to 1.
+
+Run:
+\begin{verbatim}
+  erigone -s -t examples\second-ltl
+\end{verbatim}
+where the argument \p{-t} tells \prg{} to use the LTL formula. The
+result is:
+\begin{verbatim}
+verification terminated=never claim terminated,
+  line=9,statement={critical--},
+\end{verbatim}
+
+The phrase \emph{never claim terminated} is a technical term used by the
+model checker to report that an error has been found. The counterexample
+can be displayed by running a guided simulation.
+
+Running a verification for the program with the semaphore gives the
+result that the verification was terminated successfully.
+
+\section{Verifying a liveness property using LTL}
+
+Consider the following program, which is a very simple example used to
+demonstrate the concept of fairness:
+
+\begin{verbatim}
+byte n = 0;
+bool flag = false;
+
+active proctype p() {
+  do
+  ::  flag -> break;
+  ::  else -> n = 1 - n;
+  od
+}
+
+active proctype q() {
+  flag = true
+}
+\end{verbatim}
+
+If process \p{q} ever executes, it will set \p{flag} to \p{true} and
+process \p{p} will then terminate, but in an unfair computation (where
+\p{q} never executes) this may never happen. Let us now try to prove the
+property \p{<>flag} meaning that \emph{eventually} \p{flag} becomes
+true. The \prm{} program can be found file \p{fair1.pml} and it
+contains the LTL formula:
+
+\begin{verbatim}
+ltl { <>flag }
+\end{verbatim}
+
+Run:
+\begin{verbatim}
+erigone -a -t examples\fair1
+\end{verbatim}
+
+where \p{-a} means perform a verification in \emph{Acceptance mode}. In
+this mode, the model checker searches for an \emph{acceptance cycle},
+which is the technical term for an error in the verification of an LTL
+formula containing \emph{eventually} (\p{<>}). The result is:
+
+\begin{verbatim}
+verification terminated=acceptance cycle,
+  line=7,statement={else -> n = 1 - n},
+\end{verbatim}
+
+Run a guided simulation with the \p{-dm} argument:
+\begin{verbatim}
+initial state=0,p=1,q=1,n=0,flag=0,
+start of acceptance cycle=1,
+next state=1,p=3,q=1,n=0,flag=0,
+next state=2,p=1,q=1,n=1,flag=0,
+next state=3,p=3,q=1,n=1,flag=0,
+next state=4,p=1,q=1,n=0,flag=0,
+next state=5,p=3,q=1,n=0,flag=0,
+simulation terminated=end of acceptance cycle,
+line=7,statement={else -> n = 1 - n},
+\end{verbatim}
+
+You can see that state 5 is the same as state 1 so the computation can
+continue indefinitely by cyclically repeating these five states, while
+\p{flag} is false (= 0) in all the states. This happened because the
+path is constructed by taking transitions only from process \p{p}.
+
+Perform a verification in \emph{Acceptance mode with weak fairness}
+by using the argument \p{-f}.
+
+\begin{verbatim}
+erigone -f -t examples\fair1
+\end{verbatim}
+
+In this mode, only weakly fair computations are candidates for
+acceptance cycles. In a weakly fair computation, continually enabled
+transitions must eventually be taken. Since the assignment statement
+\p{flag=true} is obviously continually enabled, it must be taken. When
+the verification is run, the result is: The result is:
+
+\begin{verbatim}
+verification terminated=successfully,
+\end{verbatim}
+
+\end{document}
