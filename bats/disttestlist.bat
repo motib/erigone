@@ -1,0 +1,10 @@
+test\*.pml
+test\*.prp
+examples\*.pml
+examples\*.prp
+vmc-examples\*.pml
+runtest.bat
+runtest.txt
+runexamples.bat
+runexamples.txt
+runall.bat

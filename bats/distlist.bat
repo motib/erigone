@@ -1,0 +1,11 @@
+erigone.exe
+trace.exe
+list.exe
+vmc.exe
+docs\erigone-ug.pdf
+docs\erigone-quick.pdf
+examples\*.pml
+examples\*.prp
+examples\readme.txt
+vmc-examples\*.pml
+dist\erigone-release.html
