@@ -1,0 +1,73 @@
+
+C:\erigone>src\erigone -s    -lt800 examples\count 
+verification terminated=assert statement is false,line=30,statement={assert (n > 2)},
+
+C:\erigone>src\erigone -s     examples\sat 
+verification terminated=successfully,
+
+C:\erigone>src\erigone -s     examples\fa 
+verification terminated=assert statement is false,line=41,statement={assert(false)},
+
+C:\erigone>src\erigone -s     examples\second 
+verification terminated=assert statement is false,line=22,statement={assert (critical == 1)},
+
+C:\erigone>src\erigone -s -t  examples\second-ltl 
+verification terminated=never claim terminated,line=11,statement={critical--},
+
+C:\erigone>src\erigone -s -t  examples\second-rr 
+verification terminated=never claim terminated,line=10,statement={csp:wantp = false},
+
+C:\erigone>src\erigone -s     examples\third 
+verification terminated=invalid end state,line=7,statement={wantp = true},
+
+C:\erigone>src\erigone -a -t  examples\fourth 
+verification terminated=acceptance cycle,line=27,statement={wantQ = true},
+
+C:\erigone>src\erigone -f -t  examples\fourth 
+verification terminated=acceptance cycle,line=12,statement={wantP = true},
+
+C:\erigone>src\erigone -s     examples\dekker 
+verification terminated=successfully,
+
+C:\erigone>src\erigone -a -t -lt100 examples\dekker-live 
+verification terminated=acceptance cycle,line=35,statement={(turn == 2)},
+
+C:\erigone>src\erigone -f -t -lt100 examples\dekker-live 
+verification terminated=successfully,
+
+C:\erigone>src\erigone -s     examples\sem 
+verification terminated=successfully,
+
+C:\erigone>src\erigone -a -t  examples\fair1 
+verification terminated=acceptance cycle,line=9,statement={else -> n = 1 - n},
+
+C:\erigone>src\erigone -f -t  examples\fair1 
+verification terminated=successfully,
+
+C:\erigone>src\erigone -a -t  examples\fair2 
+verification terminated=acceptance cycle,line=15,statement={flag = true},
+
+C:\erigone>src\erigone -f -t  examples\fair2 
+verification terminated=acceptance cycle,line=8,statement={else -> true},
+
+C:\erigone>src\erigone -r     examples\ch1 
+1 2 3
+4 5 6
+7 8 9
+10 11 12
+simulation terminated=valid end state,line=20,statement={printf("%d %d %d\n", a, b, c)},
+
+C:\erigone>src\erigone -r     examples\ch2 
+4 5 6
+7 8 8
+7 8 9
+7 8 9
+1 2 3
+20 21 22
+simulation terminated=valid end state,line=22,statement={printf("%d %d %d\n", a, b, c)},
+
+C:\erigone>src\erigone -r     examples\ch3 
+5 6
+10 11
+8
+simulation terminated=valid end state,line=19,statement={printf("%d\n", b)},

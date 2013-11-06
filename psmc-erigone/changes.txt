@@ -1,0 +1,107 @@
+  Principles of the Spin Model Checker
+          Mordechai Ben-Ari
+           Springer, 2008
+
+    Promela programs for Erigone
+
+    http://code.google.com/p/erigone/.
+
+The archive that is available for the book is intended for use with
+the Spin model checker. I have developed Erigone, a Spin-compatible
+model checker that is intended for educational use. This archive
+contains Promela programs that can be used with Erigone, possibly with
+straightforward modications.
+
+The following abbreviations are used:
+       
+i/b -- replace "int" with "byte"
+ltl -- replace defined atomic propositions by #...#
+    -- and negate the LTL formula (which jSpin did automatically)
+for -- replace the use of the "for" macro with guarded commands
+lit -- replace the use of a defined identifer by a literal
+ns  -- the program demonstrates a construct not supported by Erigone
+
+Chapter 01
+counting        OK, i/b, ltl
+for             deleted, ns (preprocessos)
+gcd             OK, i/b
+if1             OK, i/b, replace b=-4 by b=4
+if2             OK, i/b, year=2000 to year=0
+if2-conditional deleted, ns (conditional expressions)
+max             OK, i/b
+mtype           OK
+mtype1          OK, use one mtype declaration for all symbols
+rev             OK, i/b, replace value=123 by value=120
+
+Chapter 02
+divide1         OK, i/b
+divide2         OK, i/b
+max1            OK, i/b and replace conditional by boolean expression
+
+Chapter 03
+count           OK
+cs0             OK
+cs              OK
+dstep           OK
+init            OK
+interleave1     OK
+interleave2     OK
+interleave3     OK
+
+Chapter 04
+end             OK
+end1            OK
+relay           OK, for
+sem             OK
+third-abbrev    OK
+third-atomic    OK
+third-do        OK
+third           OK
+
+Chapter 05
+first-ncs       OK, ltl
+fourth-liveness OK, ltl
+peterson-over   OK, ltl
+stopA           OK, i/b
+
+Chapter 06
+sparse          OK, i/b, lit, for, remove negative numbers and typedef
+sum             OK, i/b, for, declaration of "sum" to start of proctype
+sum2            deleted, ns (inline)
+
+Chapter 07
+listing-7-1        OK
+listing-7-2        OK
+listing-7-3        OK
+listing-7-4        OK
+listing-7-4-verify OK
+listing-7-5        OK
+listing-7-5-run    OK
+listing-7-5-verify OK with minor changes
+listing-7-6        OK, ltl
+listing-7-7        OK
+listing-7-8        OK, remove inline
+
+Chapter 08
+fa              OK, replace timeout by else, lit
+fa1             OK, replace timeout by else, lit, remove inline
+sat             OK
+sat3            OK, break up the expression which is too long for Erigone
+sat(others)     deleted, too big for the Erigone configuration
+
+Chapter 09
+dining          deleted, too big for the Erigone configuation
+priority        deleted, ns (priority)
+unless          deleted, ns (unless)
+
+Chapter 10
+generate        OK, for
+generate1       OK, for
+sem-prog        deleted, ns (progress labels)
+
+Chapter 11
+The programs in this Chapter use too many unsupported features and are
+too large for Erigone. (An exception is Fischer's algorithm which works
+after small changes.)
+
+Now is the time to start using Spin!!
