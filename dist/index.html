@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="keywords"
+   CONTENT="Mordechai Ben-Ari,Moti Ben-Ari,Erigone,Promela,EUI,
+   model checking, model checker,Spin,concurrent programming,Ada,Ada 2005">
+   <TITLE>The Erigone Model Checker</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<CENTER>
+<B><FONT COLOR="#FF0000"><FONT SIZE=+3>The Erigone Model Checker</FONT></FONT></b><br><br>
+<FONT COLOR="#FF0000"><FONT SIZE=+2>
+<a href="http://stwww.weizmann.ac.il/g-cs/benari/">Moti Ben-Ari</a></FONT></FONT>
+</CENTER>
+
+<p><b>Erigone</b> is a partial reimplementation of the <a
+href="http://spinroot.com/">Spin Model Checker</a>. The goal is to
+facilitate learning concurrency and model checking. Erigone implements a
+large subset of Promela; no language constructs are added so that
+programs for Erigone can be used with Spin when more expressiveness and
+better performance are desired.</p>
+
+<p><b>Trace</b> is a postprocessor for Erigone that formats the output
+of a simulation in a tabular form that can be customized in terms of
+what statements and variables are displayed.</p>
+
+<p><b>VMC</b> is a postprocessor for Erigone that can automatically
+generate diagrams of the generation of the state space of simple Promela
+programs during a verification. </p>
+
+<b>EUI</b> is a GUI development
+environment for Erigone. (EUI is an adaptation of the
+<a href="../jspin/index.html">jSpin</a> environment for Spin.) </p>
+
+<h3>The design of Erigone</h3>
+<ul>
+<li>Erigone is single, self-contained, executable file
+so that installation and use are trivial.
+<li>Erigone produces a detailed trace of the model checking algorithms.
+The contents of the trace are customizable and a uniform keyword-based
+format is used that can be directly read or used by other tools.
+<li>Extensive modularization is used in the design of the Erigone
+program to facilitate understanding the source code. This will also
+enable researchers to easily modify and extend the program.
+</ul>
+
+<h3>Examples</h3>
+Examples of the output of Erigone for the <i>Second Attempt</i> at
+solving the critical section problem (see Ben-Ari (2005)):
+<ul>
+<li><a href="second-assert-simulate.txt">A random simulation run</a>,
+which results in a violation of the assertion of mutual exclusion.
+<li>The above random simulation reformatted
+by the included postprocessor <a href="second-assert-trace.txt">Trace</a>.
+<li><a href="second-assert-verify.txt">Verification of safety</a>.
+</ul>
+
+<h3>Software downloads</h3>
+<ul>
+<li>The source and binary archives are in the Erigone project at Google Code:
+<a href="http://code.google.com/p/erigone/">http://code.google.com/p/erigone/</a>.
+<li>The source and binary archives for the EUI development environment
+are in the jSpin project at Google Code:
+<a href="http://code.google.com/p/jspin/">http://code.google.com/p/jspin/</a>.
+</ul>
+Both archives of both projects contain example programs and
+documentation.
+
+<h3>Documentation</h3>
+The following Guides can be downloaded separately, but may not
+be as up-to-date as that in the project archives.
+<ul>
+<li><a href="erigone-quick.pdf">Erigone Quick Start Guide</a>.
+<li><a href="erigone-ug.pdf">Erigone User's Guide</a>.
+<li><a href="eui-quick.pdf">EUI Quick Start Guide</a>.
+<li><a href="eui-user.pdf">EUI User's Guide</a>.
+<li>A paper about Erigone <a href="BenAri-Spin09.pdf">Teaching
+Concurrency and Model Checking</a> that was presented at the SPIN 2009
+Workshop.
+(It can also be <a href="http://spinroot.com/spin/Workshops/ws09/BenAri.pdf">downloaded<a>
+from the Spin webiste.)
+</ul>
+
+<h3>Promela programs</h3>
+Promela programs in the archives supplied with my textbooks has been
+adapated as far as possible for use with Erigone. They can be downloaded
+from the Erigone project or here.
+<ul>
+<li>The <a href="psmc-erigone-2009-09-29.zip">source code of the
+programs</a> from my textbook <a href="http://www.springer.com/978-1-84628-769-5">
+Principles of the Spin Model Checker</a> adapted for use with Erigone.
+For more information on this book
+<a href="http://stwww.weizmann.ac.il/g%2Dcs/benari/books/index.html#spin">click here</a>.
+<li>The <a href="pcdp-erigone-2009-09-29.zip">source code of the
+programs</a> from my textbook <a href="http://www.pearsoned.co.uk/ben-ari/">
+Principles of Concurrent and Distributed Programming</a> adapted for use
+with Erigone.
+For more information on this book
+<a href="http://stwww.weizmann.ac.il/g%2Dcs/benari/books/index.html#pcdp2">click here</a>.
+</ul>
+
+<h3>Implementation</h3>
+<p>Erigone is written in <a href="http://www.sigada.org/">Ada 2005</a> for
+reliability, maintainability and portability. No non-standard constructs
+are used. The <a href="https://libre.adacore.com/">GNAT</a> compiler was
+used; it is available in free, academic and commercial versions.
+The Erigone software is copyrighted under the
+<a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU General Public
+License</a>.
+Prior to Version 2.0.0, Erigone used a Promela compiler developed by
+<a href="http://cs.nyu.edu/~tk883/">Trishank Karthik Kuppusamy</a> at
+New York University under the supervision of Edmond Schonberg. This
+version is available in the SVN repository in the branch ErigoneP.
+</p>
+
+<h3>References</h3>
+<ul>
+<li> M. Ben-Ari. <a href="http://www.springer.com/978-1-84882-313-6">
+Ada for Software Engineers</a>, Springer, 2009
+<li> M. Ben-Ari. <a href="http://www.springer.com/978-1-84628-769-5">
+Principles of the Spin Model Checker</a>, Springer, 2008..
+<li> M. Ben-Ari. <a href="http://www.pearsoned.co.uk/ben-ari/">Principles 
+of Concurrent and Distributed Programming</a>, Addison-Wesley, 2005.
+<li>G. J. Holzmann.
+<a href="http://spinroot.com/spin/Doc/Book_extras/index.html">The
+Spin Model Checker: Primer and Reference Manual</a>, Addison-Wesley, 2004. 
+</ul>
+
+<P><A HREF="../home/software.html"><IMG SRC="../home/LEFT.GIF" ></A>
+<p>Last update on 7 November 2011.</p>
+</BODY>
+</HTML>
