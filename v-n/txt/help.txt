@@ -1,0 +1,72 @@
+            VN - Visualization of Nondeterminism
+
+ For a given input string, a nondeterministic finite automata (NDFA)
+ can have more than one execution sequence. Sources of nondeterminism
+ include multiple transitions for the same letter from a state,
+ as well as lambda-transitions. VN nondeterministically executes an NDFA
+ and displays the path in the graph for the automaton.
+
+ The graphical editor of JFLAP (http://jflap.org) is used to create an NDFA
+ and save it. JFLAP saves the graph as an XML file with extension ".jff".
+
+ Interaction with VN is through a toolbar. All toolbar buttons have 
+ mnemonics (Alt-character).
+ 
+ The "Help", "About" and "Exit" buttons are standard.
+ 
+ "Options" enables you to change the size of the nodes and labels 
+ in the graphs, and to select whether paths should be highlighted
+ in color or bold. The options labeled "Interactive" and "Choose"
+ are described in the VN documentation.
+
+ Error messages from VN are displayed in the text area at the bottom 
+ of the screen. Graphs of automata are displayed in the left-hand pane 
+ and the paths are displayed in the right-hand pane.
+ A textual representation of the path is displayed in a text area
+ below the toolbar.
+
+ Select "Open" and select a ".jff" file;
+ the automaton described in the file will be displayed.
+
+ Select "Edit" to invoke JFLAP to edit the automaton.
+ Remember to OPEN THE FILE again to load the modified automaton.
+
+ Enter an input string in the text field labeled "String or length"
+ and select "Generate".  This will create a program that can generate
+ executions of the automaton on the input string.
+
+ Select "Random" to execute the automaton with a random resolution 
+ of nondeterminism. The sequence of states will appear in the text area 
+ below the toolbar, along with an indication if the input string was 
+ accepted or rejected.
+
+ Select "Create" to execute the automaton, resolving
+ nondeterminism interactively. Determinisitic choices will be made
+ automatically; if a choice cannot be taken, it will be displayed in
+ square brackets and cannot be selected. "Quit" terminates the execution.
+ Keyboard shortcuts: "Tab" moves between buttons and "Space" or
+ "Enter" selects the highlighted button.
+ 
+ Select "Find" to search for an accepting path through the automaton.
+ 
+ Select "Next" to search for the next accepting path for this input.
+ The total number of accepting computations is displayed in the path area.
+ 
+ If you enter an integer value in the text field "String or length",
+ the program that is generated will find all input strings on this 
+ length that are accepted. The set of these strings will be displayed
+ in the path area.
+ 
+ If the automaton is deterministic, it is possible to obtain
+ the partition of a set of input strings of a given length
+ into the equivalence classes associated with each state.
+ Enter a length in the text field and select "DFA" repeatedly.
+ For each state, the set of input strings "accepted" by that
+ state is displayed; once "DFA" is selected for all states,
+ the set of equivalence classes is displayed in the right-hand pane.
+
+ Paths are displayed in the right-hand pane and highlighted
+ in the display of the automaton in the left-hand pane. The difference
+ is that the "path" includes multiple visits to the same state,
+ while the highlighted path will, of course, include just one state
+ for all occurrences.
